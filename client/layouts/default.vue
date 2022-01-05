@@ -1,11 +1,6 @@
 <template>
   <v-app dark>
-    <v-navigation-drawer
-      v-model="drawer"
-      :clipped="clipped"
-      fixed
-      app
-    >
+    <v-navigation-drawer v-model="drawer" :clipped="clipped" fixed app>
       <v-list>
         <v-list-item
           v-for="(item, i) in items"
@@ -33,12 +28,11 @@
         <Nuxt />
       </v-container>
     </v-main>
-      <v-list>
-          <v-list-item-action>
-            <v-icon light> mdi-repeat </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-      </v-list>
+    <v-list>
+      <v-list-item-action>
+        <v-icon light> mdi-repeat </v-icon>
+      </v-list-item-action>
+    </v-list>
   </v-app>
 </template>
 
@@ -48,7 +42,7 @@ export default {
   data() {
     return {
       clipped: false,
-      drawer: true,
+      drawer: false,
       fixed: false,
       items: [
         {
