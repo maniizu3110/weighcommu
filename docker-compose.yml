@@ -20,17 +20,17 @@ services:
     depends_on:
       - api
       - client
-    image: maniizu3110/weighcommu-nginx
+    image: maniizu3110/nginx:v1
     ports:
       - "80:80"
   client:
-    image: maniizu3110/weighcommu-client
+    image: maniizu3110/client:v1
     ports:
       - "3000:3000"
     depends_on:
       - postgres
   api:
-    image: maniizu3110/weighcommu-api
+    image: maniizu3110/api:v1
     ports:
       - "8080:8080"
     depends_on:
