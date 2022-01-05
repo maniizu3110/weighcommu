@@ -1,0 +1,49 @@
+#https-portal:
+#  image: steveltn/https-portal:1
+#  ports:
+#    - '80:80'
+#    - '443:443'
+#  environment:
+#    DOMAINS: 'weigh'
+#    STAGE: 'production'
+
+version: "3.9"
+services:
+  postgres:
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=weighcommu
+    ports:
+      - "5432:5432"
+  nginx:
+    depends_on:
+      - api
+      - client
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports:
+      - "80:80"
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./api:/app
+    depends_on:
+      - postgres
