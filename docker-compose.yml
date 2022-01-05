@@ -1,13 +1,5 @@
-version: "3.9"
+54.65.161.154 version: "3.9"
 services:
-  https-portal:
-    image: steveltn/https-portal:1
-    ports:
-      - '80:80'
-      - '443:443'
-    environment:
-      DOMAINS: 'weighcommu.link'
-      #STAGE: 'production'
   postgres:
     image: postgres:13-alpine
     environment:
