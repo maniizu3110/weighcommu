@@ -1,14 +1,13 @@
-#https-portal:
-#  image: steveltn/https-portal:1
-#  ports:
-#    - '80:80'
-#    - '443:443'
-#  environment:
-#    DOMAINS: 'weigh'
-#    STAGE: 'production'
-
 version: "3.9"
 services:
+  https-portal:
+    image: steveltn/https-portal:1
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      DOMAINS: 'weighcommu.link'
+      #STAGE: 'production'
   postgres:
     image: postgres:13-alpine
     environment:
@@ -21,29 +20,18 @@ services:
     depends_on:
       - api
       - client
-    build:
-      dockerfile: Dockerfile
-      context: ./nginx
+    image: maniizu3110/weighcommu-nginx
     ports:
       - "80:80"
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile.dev
-    volumes:
-      - ./client:/app
-      - /app/node_modules
+    image: maniizu3110/weighcommu-client
     ports:
       - "3000:3000"
     depends_on:
       - postgres
   api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile.dev
+    image: maniizu3110/weighcommu-api
     ports:
       - "8080:8080"
-    volumes:
-      - ./api:/app
     depends_on:
       - postgres
