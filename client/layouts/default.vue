@@ -55,8 +55,18 @@ export default {
           title: 'people',
           to: '/',
         },
+        {
+          icon: 'mdi-account-multiple',
+          title: 'Signin',
+          to: '/auth/signin',
+        },
+        {
+          icon: 'mdi-account-multiple',
+          title: 'Signup',
+          to: '/auth/signup',
+        },
       ],
-      title: 'ウェイコム',
+      title: 'Weighcomme',
     }
   },
 }
