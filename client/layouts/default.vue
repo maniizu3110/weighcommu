@@ -28,11 +28,6 @@
         <Nuxt />
       </v-container>
     </v-main>
-    <v-list>
-      <v-list-item-action>
-        <v-icon light> mdi-repeat </v-icon>
-      </v-list-item-action>
-    </v-list>
   </v-app>
 </template>
 
@@ -47,12 +42,12 @@ export default {
       items: [
         {
           icon: 'mdi-apps',
-          title: 'ホーム',
+          title: 'Home',
           to: '/',
         },
         {
           icon: 'mdi-chart-box',
-          title: '成果',
+          title: 'Report',
           to: '/report',
         },
         {
