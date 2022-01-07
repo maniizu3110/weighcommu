@@ -18,6 +18,11 @@ Parameters:
     Type: String
     Default: 10.192.10.0/24
 
+  PublicSubnet2CIDR:
+    Description: Please enter the IP range (CIDR notation) for the public subnet in the first Availability Zone
+    Type: String
+    Default: 10.192.20.0/24
+
   ImageId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
@@ -57,6 +62,16 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName} Public Subnet (AZ1)
+  Subnet2:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      CidrBlock: !Ref PublicSubnet2CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Subnet (AZ2)
   # --------------------  ネットワーク周りの定義ここから --------------------
   InternetGateway:
     Type: "AWS::EC2::InternetGateway"
@@ -130,3 +145,16 @@ Resources:
     Type: AWS::EC2::EIP
     Properties:
       InstanceId: !Ref EC2Instance
+
+Outputs:
+  VPC:
+    Description: A reference to the created VPC
+    Value: !Ref VPC
+  
+  Subnet1:
+    Description: A reference to the public subnet in the 1st Availability Zone
+    Value: !Ref Subnet1
+  
+  EC2Instance:
+    Description: A reference to the ec2 instance
+    Value: !Ref EC2Instance
