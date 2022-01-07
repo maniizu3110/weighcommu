@@ -1,9 +1,14 @@
-#前提
-#対象のEC2は既に作成済
-#Route53でドメイン取得、ホストゾーン作成が完了済
+# ---------------- 前提 ----------------------
+# 対象のEC2は既に作成済
+# Route53でドメイン取得、ホストゾーン作成が完了済
+# --------------------------------------------
+# ---------------- 注意点 ----------------------
+# スタックを削除してもRoute53のCNAMEは削除されない
+# 手動で削除する必要がある
+# --------------------------------------------
 Description: Create new ALB, ACM, SG, https
 Parameters:
-  ServerName:
+  EnvironmentName:
     Description: Server Name
     Type: String
     Default: 'test'
@@ -45,8 +50,8 @@ Resources:
   SGloadbalancer:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupName: !Sub ${ServerName}-alb-sg
-      GroupDescription: !Sub ${ServerName}-alb-sg
+      GroupName: !Sub ${EnvironmentName}-alb-sg
+      GroupDescription: !Sub ${EnvironmentName}-alb-sg
       VpcId: !Ref VPCID
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -55,12 +60,12 @@ Resources:
           CidrIp: !Ref AllowIP
       Tags:
         - Key: Name
-          Value: !Sub ${ServerName}-alb-sg
+          Value: !Sub ${EnvironmentName}-alb-sg
   TargetGroup: 
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties: 
       VpcId: !Ref VPCID
-      Name: !Sub ${ServerName}-tg
+      Name: !Sub ${EnvironmentName}-tg
       Protocol: HTTP
       Port: 80
       HealthCheckProtocol: HTTP
@@ -75,10 +80,10 @@ Resources:
       Targets: 
         - Id: !Ref EC2InstanceID
           Port: 80
-  InternetALB: 
+  ALB: 
     Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
     Properties: 
-      Name: !Sub ${ServerName}-alb
+      Name: !Sub ${EnvironmentName}-alb
       Scheme: "internet-facing"
       LoadBalancerAttributes: 
         - Key: "deletion_protection.enabled"
@@ -104,7 +109,7 @@ Resources:
             Protocol: HTTPS
             Query: '#{query}'
             StatusCode: HTTP_301
-      LoadBalancerArn: !Ref InternetALB
+      LoadBalancerArn: !Ref ALB
   ALBListenerHTTPS:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -115,7 +120,7 @@ Resources:
       DefaultActions:
         - TargetGroupArn: !Ref TargetGroup
           Type: forward
-      LoadBalancerArn: !Ref InternetALB
+      LoadBalancerArn: !Ref ALB
   DnsRecord:
     Type: AWS::Route53::RecordSet
     Properties:
@@ -124,8 +129,8 @@ Resources:
       Name: !Sub '${SubDomain}'
       Type: A
       AliasTarget:
-        HostedZoneId: !GetAtt 'InternetALB.CanonicalHostedZoneID'
-        DNSName: !GetAtt 'InternetALB.DNSName'
+        HostedZoneId: !GetAtt 'ALB.CanonicalHostedZoneID'
+        DNSName: !GetAtt 'ALB.DNSName'
   ACM:
     Type: AWS::CertificateManager::Certificate
     Properties:
