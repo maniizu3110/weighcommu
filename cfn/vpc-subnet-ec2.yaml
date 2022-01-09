@@ -1,3 +1,8 @@
+
+# ----------------------------------------------------------------
+# Description
+# Create VPC and 2 Public Subnet and EC2(dounloading docker)
+# ----------------------------------------------------------------
 Description: Create vpc/subnet/ec2
 
 # ----------------------------------------------------------------
@@ -12,7 +17,7 @@ Parameters:
     Description: Please enter the IP range (CIDR notation) for this VPC
     Type: String
     Default: 10.192.0.0/16
-  
+
   PublicSubnet1CIDR:
     Description: Please enter the IP range (CIDR notation) for the public subnet in the first Availability Zone
     Type: String
@@ -120,6 +125,16 @@ Resources:
       SecurityGroupIds:
         - !Ref SecurityGroup
       KeyName: !Ref KeyPair
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          sudo yum update -y
+          sudo amazon-linux-extras install docker
+          sudo yum install docker
+          sudo service docker start
+          sudo usermod -a -G docker ec2-user
+          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
   SecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
@@ -150,11 +165,11 @@ Outputs:
   VPC:
     Description: A reference to the created VPC
     Value: !Ref VPC
-  
+
   Subnet1:
     Description: A reference to the public subnet in the 1st Availability Zone
     Value: !Ref Subnet1
-  
+
   EC2Instance:
     Description: A reference to the ec2 instance
     Value: !Ref EC2Instance
