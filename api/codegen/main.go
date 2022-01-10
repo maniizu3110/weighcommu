@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/util"
 	"flag"
 	"fmt"
 	"os"
@@ -8,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/iancoleman/strcase"
-	"github.com/maniizu3110/go-ca-codegen/util"
 )
 
 func GeneratePackage(destDir string, placeHolder string, model string) {
